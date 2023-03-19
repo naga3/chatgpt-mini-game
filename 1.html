@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Reaction Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    #indicator {
+      width: 200px;
+      height: 200px;
+      background-color: red;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="indicator" onclick="handleClick()">Click when green</div>
+  <script>
+    let indicator = document.getElementById('indicator');
+    let lastChangeTime = 0;
+    let waitingForClick = false;
+
+    function changeColor() {
+      if (waitingForClick) return;
+      indicator.style.backgroundColor = 'green';
+      lastChangeTime = performance.now();
+      waitingForClick = true;
+    }
+
+    function handleClick() {
+      if (!waitingForClick) return;
+      const reactionTime = performance.now() - lastChangeTime;
+      alert(`Reaction time: ${reactionTime.toFixed(2)} ms`);
+      indicator.style.backgroundColor = 'red';
+      waitingForClick = false;
+      scheduleColorChange();
+    }
+
+    function scheduleColorChange() {
+      const delay = Math.random() * 4000 + 1000; // Random delay between 1 and 5 seconds
+      setTimeout(changeColor, delay);
+    }
+
+    scheduleColorChange();
+  </script>
+</body>
+</html>

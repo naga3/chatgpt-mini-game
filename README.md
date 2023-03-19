@@ -1,2 +1,1 @@
-# chatgpt-panel-game
-ChatGPTでパネルゲームを作ってみる
+# chatgpt-mini-game

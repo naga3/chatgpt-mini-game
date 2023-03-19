@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Rhythm Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    #marker {
+      width: 50px;
+      height: 50px;
+      background-color: blue;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="marker" onclick="handleClick()"></div>
+  <script>
+    const marker = document.getElementById('marker');
+    const totalMarkers = 5;
+    let clickedMarkers = 0;
+    let gameOver = false;
+    let markerTimeout;
+
+    function handleClick() {
+      if (gameOver) return;
+      clearTimeout(markerTimeout);
+      marker.style.display = 'none';
+      clickedMarkers++;
+
+      if (clickedMarkers === totalMarkers) {
+        alert('Congratulations! You clicked all the rhythm markers!');
+        gameOver = true;
+        return;
+      }
+
+      setNextMarker();
+    }
+
+    function setNextMarker() {
+      const randomTime = Math.random() * 1000 + 500; // Random time between 500ms and 1500ms
+      markerTimeout = setTimeout(() => {
+        marker.style.display = 'block';
+      }, randomTime);
+
+      const failTimeout = setTimeout(() => {
+        if (!gameOver && marker.style.display === 'block') {
+          alert('Game Over! You missed the rhythm marker.');
+          gameOver = true;
+        }
+      }, randomTime + 1000);
+    }
+
+    function startGame() {
+      setNextMarker();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>

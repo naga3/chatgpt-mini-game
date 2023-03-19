@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click to Balance</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    #object {
+      width: 50px;
+      height: 200px;
+      background-color: blue;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transform-origin: center bottom;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="object" onclick="handleClick()"></div>
+  <script>
+    const object = document.getElementById('object');
+    let angle = 0;
+    let gameOver = false;
+
+    function handleClick() {
+      if (gameOver) return;
+      angle -= 20;
+    }
+
+    function update() {
+      if (gameOver) return;
+      angle += 0.5;
+      object.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+      if (angle >= 45 || angle <= -45) {
+        object.style.transform = 'rotate(90deg)';
+        alert('Game Over! The object has fallen.');
+        gameOver = true;
+      } else {
+        requestAnimationFrame(update);
+      }
+    }
+
+    function startGame() {
+      setTimeout(() => {
+        if (!gameOver) {
+          alert('Congratulations! You kept the object balanced.');
+          gameOver = true;
+        }
+      }, 10000); // 10 seconds
+
+      update();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
