@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sliding Puzzle</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    #puzzle {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows: repeat(4, 80px);
+      gap: 2px;
+    }
+    .tile {
+      width: 80px;
+      height: 80px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .empty {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="puzzle"></div>
+  <script>
+    const puzzle = document.getElementById('puzzle');
+    const size = 4;
+    let tiles = [];
+
+    function init() {
+      const numbers = [...Array(size * size).keys()].slice(1);
+      numbers.push(''); // empty space
+      shuffle(numbers);
+      puzzle.innerHTML = '';
+      tiles = [];
+
+      numbers.forEach((num, idx) => {
+        const tile = document.createElement('div');
+        tile.classList.add('tile');
+        if (num === '') {
+          tile.classList.add('empty');
+        } else {
+          tile.textContent = num;
+        }
+        tile.addEventListener('click', () => move(idx));
+        puzzle.appendChild(tile);
+        tiles.push(tile);
+      });
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      if (!isSolvable(array)) shuffle(array); // ensure solvable
+    }
+
+    function isSolvable(arr) {
+      const nums = arr.filter(n => n !== '');
+      let inv = 0;
+      for (let i = 0; i < nums.length; i++)
+        for (let j = i + 1; j < nums.length; j++)
+          if (nums[i] > nums[j]) inv++;
+      const emptyRow = Math.floor(arr.indexOf('') / size);
+      return (inv + emptyRow) % 2 === 0;
+    }
+
+    function move(index) {
+      const emptyIndex = tiles.findIndex(t => t.classList.contains('empty'));
+      const validMoves = [emptyIndex - 1, emptyIndex + 1, emptyIndex - size, emptyIndex + size];
+      if (!validMoves.includes(index)) return;
+      const emptyTile = tiles[emptyIndex];
+      const tile = tiles[index];
+      emptyTile.textContent = tile.textContent;
+      emptyTile.classList.remove('empty');
+      tile.textContent = '';
+      tile.classList.add('empty');
+      if (checkSolved()) {
+        setTimeout(() => alert('Congratulations! Puzzle solved!'), 10);
+      }
+    }
+
+    function checkSolved() {
+      for (let i = 0; i < size * size - 1; i++) {
+        if (tiles[i].textContent != i + 1) return false;
+      }
+      return true;
+    }
+
+    init();
+  </script>
+</body>
+</html>
