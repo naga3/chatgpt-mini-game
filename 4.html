@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Click Rhythm Game</title>
+  <script src="common.js"></script>
   <style>
     body {
       display: flex;
@@ -12,6 +13,7 @@
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
     }
     #marker {
       width: 50px;
@@ -24,11 +26,16 @@
       transform: translate(-50%, -50%);
       cursor: pointer;
       display: none;
+      transition: transform 0.2s;
+    }
+    #marker.show {
+      transform: scale(1.2);
     }
   </style>
 </head>
 <body>
   <div id="marker" onclick="handleClick()"></div>
+  <button onclick="showHint()">ヒント</button>
   <script>
     const marker = document.getElementById('marker');
     const totalMarkers = 5;
@@ -40,10 +47,12 @@
       if (gameOver) return;
       clearTimeout(markerTimeout);
       marker.style.display = 'none';
+      playBeep(440, 0.1);
       clickedMarkers++;
 
       if (clickedMarkers === totalMarkers) {
         alert('Congratulations! You clicked all the rhythm markers!');
+        playBeep(523.25, 0.3);
         gameOver = true;
         return;
       }
@@ -55,11 +64,14 @@
       const randomTime = Math.random() * 1000 + 500; // Random time between 500ms and 1500ms
       markerTimeout = setTimeout(() => {
         marker.style.display = 'block';
+        marker.classList.add('show');
+        setTimeout(() => marker.classList.remove('show'), 200);
       }, randomTime);
 
       const failTimeout = setTimeout(() => {
         if (!gameOver && marker.style.display === 'block') {
           alert('Game Over! You missed the rhythm marker.');
+          playBeep(196, 0.3);
           gameOver = true;
         }
       }, randomTime + 1000);
@@ -68,6 +80,12 @@
     function startGame() {
       setNextMarker();
     }
+
+    function showHint() {
+      alert('マーカーが現れたらリズムよくクリックしよう！');
+    }
+
+    document.addEventListener('click', startBgm, { once: true });
 
     startGame();
   </script>

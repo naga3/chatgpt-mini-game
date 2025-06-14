@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sliding Puzzle</title>
+  <script src="common.js"></script>
   <style>
     body {
       display: flex;
@@ -31,6 +32,7 @@
       align-items: center;
       cursor: pointer;
       user-select: none;
+      transition: background-color 0.2s;
     }
     .empty {
       background-color: #ccc;
@@ -39,6 +41,7 @@
 </head>
 <body>
   <div id="puzzle"></div>
+  <button onclick="showHint()">ヒント</button>
   <script>
     const puzzle = document.getElementById('puzzle');
     const size = 4;
@@ -93,8 +96,12 @@
       emptyTile.classList.remove('empty');
       tile.textContent = '';
       tile.classList.add('empty');
+      playBeep(440, 0.05);
       if (checkSolved()) {
-        setTimeout(() => alert('Congratulations! Puzzle solved!'), 10);
+        setTimeout(() => {
+          alert('Congratulations! Puzzle solved!');
+          playBeep(523.25, 0.3);
+        }, 10);
       }
     }
 
@@ -104,6 +111,12 @@
       }
       return true;
     }
+
+    function showHint() {
+      alert('空白タイルを動かして1から順に並べ替えよう！');
+    }
+
+    document.addEventListener('click', startBgm, { once: true });
 
     init();
   </script>
