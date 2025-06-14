@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Click to Defuse</title>
+  <script src="common.js"></script>
   <style>
     body {
       display: flex;
@@ -12,6 +13,7 @@
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
     }
     .bomb {
       width: 50px;
@@ -26,10 +28,16 @@
       font-weight: bold;
       color: white;
       cursor: pointer;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .explode {
+      transform: scale(2);
+      opacity: 0;
     }
   </style>
 </head>
 <body>
+  <button onclick="showHint()">ヒント</button>
   <script>
     const bombCount = 5;
     let bombsLeft = bombCount;
@@ -47,11 +55,14 @@
 
     function handleClick(event) {
       if (gameOver) return;
-      event.target.remove();
+      event.target.classList.add('explode');
+      playBeep(330, 0.2);
+      setTimeout(() => event.target.remove(), 300);
       bombsLeft--;
 
       if (bombsLeft === 0) {
         alert('Congratulations! All bombs defused!');
+        playBeep(523.25, 0.3);
         gameOver = true;
       }
     }
@@ -63,10 +74,17 @@
       setTimeout(() => {
         if (!gameOver) {
           alert('Game Over! You failed to defuse all bombs.');
+          playBeep(196, 0.4);
           gameOver = true;
         }
       }, 3000); // 3 seconds
     }
+
+    function showHint() {
+      alert('画面に現れた爆弾をすべて3秒以内にクリックして撤去しよう！');
+    }
+
+    document.addEventListener('click', startBgm, { once: true });
 
     startGame();
   </script>

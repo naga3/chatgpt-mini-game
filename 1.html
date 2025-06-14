@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Click Reaction Game</title>
+  <script src="common.js"></script>
   <style>
     body {
       display: flex;
@@ -12,6 +13,7 @@
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
     }
     #indicator {
       width: 200px;
@@ -24,11 +26,16 @@
       font-size: 24px;
       font-weight: bold;
       color: white;
+      transition: box-shadow 0.3s;
+    }
+    .flash {
+      box-shadow: 0 0 20px 5px yellow;
     }
   </style>
 </head>
 <body>
   <div id="indicator" onclick="handleClick()">Click when green</div>
+  <button onclick="showHint()">ヒント</button>
   <script>
     let indicator = document.getElementById('indicator');
     let lastChangeTime = 0;
@@ -39,6 +46,7 @@
       indicator.style.backgroundColor = 'green';
       lastChangeTime = performance.now();
       waitingForClick = true;
+      playBeep(523.25, 0.1);
     }
 
     function handleClick() {
@@ -46,6 +54,9 @@
       const reactionTime = performance.now() - lastChangeTime;
       alert(`Reaction time: ${reactionTime.toFixed(2)} ms`);
       indicator.style.backgroundColor = 'red';
+      indicator.classList.add('flash');
+      setTimeout(() => indicator.classList.remove('flash'), 300);
+      playBeep(392, 0.1);
       waitingForClick = false;
       scheduleColorChange();
     }
@@ -54,6 +65,12 @@
       const delay = Math.random() * 4000 + 1000; // Random delay between 1 and 5 seconds
       setTimeout(changeColor, delay);
     }
+
+    function showHint() {
+      alert('丸が緑色になったらすぐにクリックして反射速度を競おう！');
+    }
+
+    document.addEventListener('click', startBgm, { once: true });
 
     scheduleColorChange();
   </script>

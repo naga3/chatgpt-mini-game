@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Click to Balance</title>
+  <script src="common.js"></script>
   <style>
     body {
       display: flex;
@@ -12,6 +13,7 @@
       height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
     }
     #object {
       width: 50px;
@@ -22,11 +24,21 @@
       transform: translateX(-50%);
       transform-origin: center bottom;
       cursor: pointer;
+      transition: transform 0.1s;
+    }
+    #object.shake {
+      animation: shake 0.2s;
+    }
+    @keyframes shake {
+      0% { transform: translateX(-50%) rotate(-2deg); }
+      50% { transform: translateX(-50%) rotate(2deg); }
+      100% { transform: translateX(-50%) rotate(-2deg); }
     }
   </style>
 </head>
 <body>
   <div id="object" onclick="handleClick()"></div>
+  <button onclick="showHint()">ヒント</button>
   <script>
     const object = document.getElementById('object');
     let angle = 0;
@@ -35,6 +47,9 @@
     function handleClick() {
       if (gameOver) return;
       angle -= 20;
+      object.classList.add('shake');
+      playBeep(440, 0.1);
+      setTimeout(() => object.classList.remove('shake'), 200);
     }
 
     function update() {
@@ -45,6 +60,7 @@
       if (angle >= 45 || angle <= -45) {
         object.style.transform = 'rotate(90deg)';
         alert('Game Over! The object has fallen.');
+        playBeep(196, 0.3);
         gameOver = true;
       } else {
         requestAnimationFrame(update);
@@ -55,12 +71,19 @@
       setTimeout(() => {
         if (!gameOver) {
           alert('Congratulations! You kept the object balanced.');
+          playBeep(523.25, 0.3);
           gameOver = true;
         }
       }, 10000); // 10 seconds
 
       update();
     }
+
+    function showHint() {
+      alert('倒れないように棒をクリックしてバランスを取ろう！');
+    }
+
+    document.addEventListener('click', startBgm, { once: true });
 
     startGame();
   </script>
