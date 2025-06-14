@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Action Game</title>
+  <script src="common.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      background: #222;
+      display: block;
+      margin: 0 auto;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-size: 24px;
+    }
+    #hint {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">0</div>
+  <button id="hint" onclick="showHint()">ヒント</button>
+  <canvas id="game" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+    const player = { x: 200, y: 200, size: 20 };
+    const coins = [];
+    const enemy = { x: 50, y: 50, size: 20 };
+    const keys = {};
+    let gameOver = false;
+
+    function spawnCoin() {
+      coins.push({
+        x: Math.random() * (canvas.width - 20) + 10,
+        y: Math.random() * (canvas.height - 20) + 10,
+        size: 10,
+      });
+    }
+    for (let i = 0; i < 5; i++) spawnCoin();
+
+    document.addEventListener('keydown', e => keys[e.key] = true);
+    document.addEventListener('keyup', e => keys[e.key] = false);
+    document.addEventListener('click', startBgm, { once: true });
+
+    function update() {
+      if (gameOver) return;
+      if (keys['ArrowUp']) player.y -= 3;
+      if (keys['ArrowDown']) player.y += 3;
+      if (keys['ArrowLeft']) player.x -= 3;
+      if (keys['ArrowRight']) player.x += 3;
+      player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+      player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
+
+      if (enemy.x < player.x) enemy.x += 1.5; else enemy.x -= 1.5;
+      if (enemy.y < player.y) enemy.y += 1.5; else enemy.y -= 1.5;
+
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const c = coins[i];
+        if (Math.hypot(player.x - c.x, player.y - c.y) < player.size) {
+          coins.splice(i, 1);
+          playBeep(523.25, 0.1);
+          score += 10;
+          scoreEl.textContent = score;
+          spawnCoin();
+        }
+      }
+
+      if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < player.size) {
+        alert('Game Over! Score: ' + score);
+        playBeep(196, 0.4);
+        gameOver = true;
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'yellow';
+      coins.forEach(c => ctx.fillRect(c.x, c.y, c.size, c.size));
+      ctx.fillStyle = 'cyan';
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+      ctx.fillStyle = 'red';
+      ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+    }
+
+    function loop() {
+      update();
+      draw();
+      if (!gameOver) requestAnimationFrame(loop);
+    }
+
+    function showHint() {
+      alert('矢印キーでヒーローを操作してコインを集め、敵から逃げ切ろう！');
+    }
+
+    loop();
+  </script>
+</body>
+</html>
